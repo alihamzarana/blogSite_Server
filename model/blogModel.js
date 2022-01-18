@@ -19,7 +19,7 @@ const blogSchema = mongoose.Schema(
       required: false,
     },
   },
-  { timstamps: true }
+  { timestamps: true }
 );
 const Blog = mongoose.model("Blog", blogSchema);
 module.exports = Blog;
