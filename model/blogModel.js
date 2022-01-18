@@ -4,15 +4,19 @@ const blogSchema = mongoose.Schema(
   {
     title: {
       type: String,
-      required: true,
+      required: false,
     },
     body: {
       type: String,
-      required: true,
+      required: false,
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+    },
+    author: {
+      type: String,
+      required: false,
     },
   },
   { timStamps: true }
