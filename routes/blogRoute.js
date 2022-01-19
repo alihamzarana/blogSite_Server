@@ -1,6 +1,8 @@
 const blogController = require("../controller/blogController");
 const router = require("express").Router();
 const authenticate = require("../middleware/auth");
+const upload = require("../imageUpload/multer");
+require("../imageUpload/cloudinary.config");
 
 router.route("/").post(authenticate, blogController.addBlog);
 

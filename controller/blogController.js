@@ -3,7 +3,7 @@ const Blog = require("../model/blogModel");
 const addBlog = async (req, res) => {
   try {
     console.log("body request with userId", req.body.userId);
-    const data = await Blog.create(req.body);
+    const data = await Blog.create(...req.body);
     console.log("created blog", data);
     if (data) {
       res.json({
