@@ -4,7 +4,9 @@ const authenticate = require("../middleware/auth");
 const upload = require("../imageUpload/multer");
 require("../imageUpload/cloudinary.config");
 
-router.route("/").post(authenticate, blogController.addBlog);
+router
+  .route("/")
+  .post([authenticate, upload.single("image")], blogController.addBlog);
 
 // router .post(('/')authenticate, )
 router.get("/", blogController.getAllBlogs);

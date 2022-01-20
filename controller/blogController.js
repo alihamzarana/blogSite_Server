@@ -1,9 +1,25 @@
 const Blog = require("../model/blogModel");
+let cloudinary = require("../imageUpload/cloudinary.config");
 
 const addBlog = async (req, res) => {
   try {
     console.log("body request with userId", req.body.userId);
-    const data = await Blog.create(...req.body);
+    console.log("body request", req.body);
+    console.log("file request", req.file);
+    let uploadImage = req.file?.path ? req.file.path : null;
+    // ? await cloudinary.uploader.upload(req.file.path)
+    // : null;
+    console.log("upload image url", uploadImage);
+    console.log("header request", req.headers);
+    // return;
+    // const image = uploadImage;
+    const blogData = {
+      title: req.body.title,
+      body: req.body.body,
+      image: uploadImage,
+    };
+    // console.log("data before store in db", blogdata);
+    const data = await Blog.create(blogData);
     console.log("created blog", data);
     if (data) {
       res.json({
