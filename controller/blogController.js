@@ -17,6 +17,8 @@ const addBlog = async (req, res) => {
       title: req.body.title,
       body: req.body.body,
       image: uploadImage,
+      author: req.body.author,
+      userId: req.body.userId,
     };
     // console.log("data before store in db", blogdata);
     const data = await Blog.create(blogData);
@@ -114,10 +116,19 @@ const updateBlog = async (req, res) => {
   try {
     console.log("body data for update", req.body);
     const blogId = req.params.id;
+    let uploadImage = req.file?.path ? req.file.path : null;
+    const updatedData = {
+      title: req.body.title,
+      body: req.bdy.body,
+      image: uploadImage,
+    };
+    if (updatedData.uploadImage === null) {
+      delete updatedData.uploadImage;
+    }
 
     const data = await Blog.findByIdAndUpdate(
       { _id: blogId },
-      { ...req.body },
+      { ...updatedData },
       { new: true }
     );
     console.log("updated data", data);
