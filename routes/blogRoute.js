@@ -7,10 +7,8 @@ require("../imageUpload/cloudinary.config");
 router
   .route("/")
   .post([authenticate, upload.single("image")], blogController.addBlog);
-
-// router .post(('/')authenticate, )
 router.get("/", blogController.getAllBlogs);
-router.route("/:id").put(blogController.updateBlog);
+router.route("/:id").put([upload.single("image")],blogController.updateBlog);
 router.route("/:id").get(blogController.singleBlog);
 
 router.route("/:id").delete(blogController.deleteBlog);

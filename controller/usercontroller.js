@@ -4,21 +4,21 @@ const jwt = require("jsonwebtoken");
 
 const createUser = async (req, res) => {
   try {
-    const body = { ...req.body };
-    console.log("body request", body);
+    const body = {
+      ...req.body
+    };
 
-    const checkEmail = await User.findOne({ email: req.body.email });
+    const checkEmail = await User.findOne({
+      email: req?.body?.email
+    });
     if (checkEmail) {
       res.json({
         status: "error",
         message: "E-mail already exists",
       });
     } else {
-      console.log("checkemail", checkEmail);
       const user = await new User(body);
-      console.log("new user:", user);
       const data = await user.save();
-      console.log("user created data", data);
       if (data) {
         res.json({
           status: "success",
@@ -38,12 +38,18 @@ const createUser = async (req, res) => {
 const getAllUsers = async (req, res) => {
   try {
     const data = await User.find();
-    if (data) {
+    if (data.length) {
       res.json({
         status: "success",
         message: "All users fetched successfully",
         data,
       });
+    }else{
+       res.json({
+         status: "error",
+         message: "No users found",
+         data,
+       });
     }
   } catch (error) {
     res.json({
@@ -55,12 +61,17 @@ const getAllUsers = async (req, res) => {
 
 const getSingleUser = async (req, res) => {
   try {
-    const data = await User.findById(req.params.id);
+    const data = await User.findById(req?.params?.id);
     if (data) {
       res.json({
         status: "success",
         message: "User fetch successfully",
         data,
+      });
+    } else {
+      res.json({
+        status: "error",
+        message: "User not found",
       });
     }
   } catch (error) {
@@ -73,20 +84,22 @@ const getSingleUser = async (req, res) => {
 
 const userLogin = async (req, res) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
+    const user = await User.findOne({
+      email: req?.body?.email
+    });
     if (user) {
-      const { password } = req.body;
+      const {
+        password
+      } = req.body;
       const checkPassowrd = await bcrypt.compare(password, user.password);
       if (checkPassowrd) {
         const payload = {
           _id: user._id,
         };
-        const token = await jwt.sign(
-          { payload },
-          "blogsite"
-          // , {
-          //   expiresIn: "1h",
-          // }
+        const token = await jwt.sign({
+            payload
+          },
+          "secret"
         );
         if (token) {
           res.json({
@@ -102,6 +115,11 @@ const userLogin = async (req, res) => {
           message: "Invalid credentials",
         });
       }
+    } else {
+      res.status(401).json({
+        status: "error",
+        message: "Invalid User",
+      });
     }
   } catch (error) {
     res.json({
@@ -113,12 +131,16 @@ const userLogin = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   try {
-    const data = await User.findByIdAndDelete(req.params.id);
+    const data = await User.findByIdAndDelete(req?.params?.id);
     if (data) {
       res.json({
         status: "success",
         message: "User deleted successfully",
-        data,
+      });
+    } else {
+      res.json({
+        status: "error",
+        message: "User not found",
       });
     }
   } catch (error) {

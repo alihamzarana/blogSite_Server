@@ -1,18 +1,8 @@
 const Blog = require("../model/blogModel");
-let cloudinary = require("../imageUpload/cloudinary.config");
 
 const addBlog = async (req, res) => {
   try {
-    console.log("body request with userId", req.body.userId);
-    console.log("body request", req.body);
-    console.log("file request", req.file);
     let uploadImage = req.file?.path ? req.file.path : null;
-    // ? await cloudinary.uploader.upload(req.file.path)
-    // : null;
-    console.log("upload image url", uploadImage);
-    console.log("header request", req.headers);
-    // return;
-    // const image = uploadImage;
     const blogData = {
       title: req.body.title,
       body: req.body.body,
@@ -20,15 +10,19 @@ const addBlog = async (req, res) => {
       author: req.body.author,
       userId: req.body.userId,
     };
-    // console.log("data before store in db", blogdata);
     const data = await Blog.create(blogData);
-    console.log("created blog", data);
     if (data) {
       res.json({
         status: "success",
         message: "Blog created",
         data,
       });
+    }else{
+       res.json({
+         status: "error",
+         message: "No blog created",
+         data,
+       });
     }
   } catch (error) {
     res.json({
@@ -40,7 +34,6 @@ const addBlog = async (req, res) => {
 
 const getAllBlogs = async (req, res) => {
   try {
-    console.log("query request", req.query);
     const { page = 1, limit = 5 } = req.query;
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
@@ -60,10 +53,6 @@ const getAllBlogs = async (req, res) => {
         limit: limit,
       };
     }
-    console.log("start index", startIndex);
-    console.log("end index", endIndex);
-
-    console.log("result is", result);
 
     const blog = await Blog.find()
       .populate("userId", "username")
@@ -72,9 +61,8 @@ const getAllBlogs = async (req, res) => {
       .skip(startIndex)
       .exec();
 
-    console.log("blogs count", count);
 
-    if (blog) {
+    if (blog.length) {
       res.json({
         status: "success",
         message: "Blogs successfully found!",
@@ -95,31 +83,15 @@ const getAllBlogs = async (req, res) => {
       message: error.message,
     });
   }
-  // try {
-  //   const data = await Blog.find();
-  //   if (data.length) {
-  //     res.json({
-  //       status: "success",
-  //       message: "All Blogs Fetched",
-  //       data,
-  //     });
-  //   }
-  // } catch (error) {
-  //   res.json({
-  //     status: "error",
-  //     message: error.message,
-  //   });
-  // }
 };
 
 const updateBlog = async (req, res) => {
   try {
-    console.log("body data for update", req.body);
-    const blogId = req.params.id;
+    const blogId = req.params?.id;
     let uploadImage = req.file?.path ? req.file.path : null;
     const updatedData = {
       title: req.body.title,
-      body: req.bdy.body,
+      body: req.body.body,
       image: uploadImage,
     };
     if (updatedData.uploadImage === null) {
@@ -131,12 +103,17 @@ const updateBlog = async (req, res) => {
       { ...updatedData },
       { new: true }
     );
-    console.log("updated data", data);
+    console.log("data", data)
     if (data) {
       res.status(200).json({
         status: "success",
         message: "Blog updated Successfully",
         data,
+      });
+    }else{
+      res.json({
+        status: "error",
+        message: "No blog updated",
       });
     }
   } catch (error) {
@@ -149,12 +126,17 @@ const updateBlog = async (req, res) => {
 
 const singleBlog = async (req, res) => {
   try {
-    const data = await Blog.findById(req.params.id);
+    const data = await Blog.findById(req?.params?.id);
     if (data) {
       res.json({
         status: "success",
         message: "Single Blog Found",
         data,
+      });
+    }else{
+      res.json({
+        status: "error",
+        message: "No blog found",
       });
     }
   } catch (error) {
@@ -167,13 +149,17 @@ const singleBlog = async (req, res) => {
 
 const deleteBlog = async (req, res) => {
   try {
-    const data = await Blog.findByIdAndDelete(req.params.id);
+    const data = await Blog.findByIdAndDelete(req?.params?.id);
     if (data) {
       res.json({
         status: "success",
         message: "Blog Deleted successfully",
-        data,
       });
+    }else{
+      res.json({
+        status: "error",
+        message:'No data found'
+      })
     }
   } catch (error) {
     res.json({
